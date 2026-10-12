@@ -1,0 +1,8 @@
+{
+  "name": "MELocal",
+  "hacs": "1.0.0",
+  "domains": ["melocal"],
+  "iot_class": "Local Polling",
+  "render_readme": true,
+  "homeassistant": "2025.2.0"
+}

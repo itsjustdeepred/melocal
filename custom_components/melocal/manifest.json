@@ -1,0 +1,17 @@
+{
+  "domain": "melocal",
+  "name": "MELocal (Mitsubishi Electric local)",
+  "codeowners": [
+    "@itsjustdeepred"
+  ],
+  "config_flow": true,
+  "dependencies": [
+    "network"
+  ],
+  "documentation": "https://github.com/itsjustdeepred/melocal",
+  "integration_type": "device",
+  "iot_class": "local_polling",
+  "issue_tracker": "https://github.com/itsjustdeepred/melocal/issues",
+  "requirements": [],
+  "version": "1.0.0"
+}

@@ -1,0 +1,478 @@
+{
+  "config": {
+    "flow_title": "{name} ({host})",
+    "step": {
+      "user": {
+        "title": "MELocal",
+        "description": "Trova gli adattatori Wi-Fi MELCloud di Mitsubishi Electric nella tua rete e leggili in locale, senza cloud.",
+        "menu_options": {
+          "scan": "Scansiona la rete",
+          "manual": "Inserisci un indirizzo IP"
+        }
+      },
+      "scan": {
+        "title": "Scansiona la rete",
+        "description": "Reti da scansionare, separate da virgola (CIDR, es. 192.168.1.0/24). Gli adattatori su un'altra VLAN devono essere raggiungibili da Home Assistant sulla porta TCP 80.",
+        "data": {
+          "networks": "Reti"
+        }
+      },
+      "pick": {
+        "title": "Unità trovate",
+        "description": "Trovate {count} nuove unità. Scegli quella da aggiungere ora; le altre compariranno tra i dispositivi rilevati.",
+        "data": {
+          "mac": "Unità"
+        }
+      },
+      "manual": {
+        "title": "Aggiungi tramite IP",
+        "data": {
+          "host": "Indirizzo IP"
+        }
+      },
+      "discovery_confirm": {
+        "description": "Aggiungere {name} su {host}?"
+      }
+    },
+    "error": {
+      "invalid_networks": "Elenco di reti non valido (massimo 4096 indirizzi in totale).",
+      "no_devices_found": "Nessun adattatore trovato.",
+      "no_new_devices": "Tutti gli adattatori trovati sono già configurati.",
+      "cannot_connect": "Nessun adattatore supportato risponde a questo indirizzo."
+    },
+    "abort": {
+      "already_configured": "Questa unità è già configurata (il suo indirizzo IP è stato aggiornato)."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "data": {
+          "scan_interval": "Intervallo di aggiornamento (secondi)"
+        }
+      }
+    }
+  },
+  "issues": {
+    "controller_clock": {
+      "title": "{name}: orologio del controller sfasato di {offset} minuti",
+      "description": "L'orologio del controller Ecodan differisce dall'ora di Home Assistant di {offset} minuti. Di solito succede quando inizia o finisce l'ora legale e l'impostazione dell'ora legale del controller è manuale.\n\nSul comando principale dell'unità vai in **Menu → Impostazioni iniziali** e attiva o disattiva l'ora legale (oppure correggi data e ora). Questo avviso sparisce da solo quando l'ora è di nuovo corretta."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "outside_temp": {
+        "name": "Temperatura esterna"
+      },
+      "z1_room_temp": {
+        "name": "Temperatura ambiente zona 1"
+      },
+      "z2_room_temp": {
+        "name": "Temperatura ambiente zona 2"
+      },
+      "flow_temp": {
+        "name": "Temperatura di mandata"
+      },
+      "return_temp": {
+        "name": "Temperatura di ritorno"
+      },
+      "dhw_tank_temp": {
+        "name": "Temperatura serbatoio ACS"
+      },
+      "dhw_secondary_temp": {
+        "name": "Temperatura secondaria ACS"
+      },
+      "z1_flow_temp": {
+        "name": "Mandata zona 1"
+      },
+      "z1_return_temp": {
+        "name": "Ritorno zona 1"
+      },
+      "z2_flow_temp": {
+        "name": "Mandata zona 2"
+      },
+      "z2_return_temp": {
+        "name": "Ritorno zona 2"
+      },
+      "boiler_flow_temp": {
+        "name": "Mandata caldaia"
+      },
+      "boiler_return_temp": {
+        "name": "Ritorno caldaia"
+      },
+      "mixing_tank_temp": {
+        "name": "Temperatura serbatoio di miscelazione"
+      },
+      "refrigerant_liquid_temp": {
+        "name": "Temperatura liquido refrigerante"
+      },
+      "condensing_temp": {
+        "name": "Temperatura di condensazione"
+      },
+      "z1_room_temp_target": {
+        "name": "Setpoint ambiente zona 1"
+      },
+      "z1_flow_temp_target": {
+        "name": "Setpoint mandata zona 1"
+      },
+      "z2_room_temp_target": {
+        "name": "Setpoint ambiente zona 2"
+      },
+      "z2_flow_temp_target": {
+        "name": "Setpoint mandata zona 2"
+      },
+      "dhw_temp_target": {
+        "name": "Setpoint ACS"
+      },
+      "legionella_temp": {
+        "name": "Temperatura antilegionella"
+      },
+      "max_flow_temp": {
+        "name": "Temperatura di mandata massima"
+      },
+      "min_flow_temp": {
+        "name": "Temperatura di mandata minima"
+      },
+      "dhw_temp_drop": {
+        "name": "Differenziale ACS"
+      },
+      "operation": {
+        "name": "Funzionamento",
+        "state": {
+          "off": "Spento",
+          "dhw": "ACS",
+          "heating": "Riscaldamento",
+          "cooling": "Raffrescamento",
+          "frost_protection": "Antigelo",
+          "legionella": "Antilegionella"
+        }
+      },
+      "z1_mode": {
+        "name": "Modalità zona 1",
+        "state": {
+          "heat_room": "Risc. temp. ambiente",
+          "heat_flow": "Risc. temp. mandata",
+          "heat_curve": "Risc. curva climatica",
+          "cool_room": "Raffr. temp. ambiente",
+          "cool_flow": "Raffr. temp. mandata"
+        }
+      },
+      "z2_mode": {
+        "name": "Modalità zona 2",
+        "state": {
+          "heat_room": "Risc. temp. ambiente",
+          "heat_flow": "Risc. temp. mandata",
+          "heat_curve": "Risc. curva climatica",
+          "cool_room": "Raffr. temp. ambiente",
+          "cool_flow": "Raffr. temp. mandata"
+        }
+      },
+      "dhw_mode": {
+        "name": "Modalità ACS",
+        "state": {
+          "normal": "Normale",
+          "eco": "Eco"
+        }
+      },
+      "heat_source": {
+        "name": "Fonte di calore",
+        "state": {
+          "heatpump": "Pompa di calore",
+          "screw_in_heater": "Resistenza a immersione",
+          "electric_heater": "Resistenza elettrica",
+          "boiler": "Caldaia"
+        }
+      },
+      "flow_rate": {
+        "name": "Portata"
+      },
+      "heat_output": {
+        "name": "Potenza erogata (dichiarata)"
+      },
+      "thermal_power": {
+        "name": "Potenza termica (calcolata)"
+      },
+      "power_consumption_estimated": {
+        "name": "Consumo elettrico (stimato)"
+      },
+      "pump_speed": {
+        "name": "Velocità pompa"
+      },
+      "mixing_valve_step": {
+        "name": "Posizione valvola miscelatrice"
+      },
+      "consumed_heating_day": {
+        "name": "Energia consumata riscaldamento (ultimo giorno)"
+      },
+      "consumed_cooling_day": {
+        "name": "Energia consumata raffrescamento (ultimo giorno)"
+      },
+      "consumed_dhw_day": {
+        "name": "Energia consumata ACS (ultimo giorno)"
+      },
+      "delivered_heating_day": {
+        "name": "Energia prodotta riscaldamento (ultimo giorno)"
+      },
+      "delivered_cooling_day": {
+        "name": "Energia prodotta raffrescamento (ultimo giorno)"
+      },
+      "delivered_dhw_day": {
+        "name": "Energia prodotta ACS (ultimo giorno)"
+      },
+      "cop_heating_day": {
+        "name": "COP riscaldamento (ultimo giorno)"
+      },
+      "cop_cooling_day": {
+        "name": "EER raffrescamento (ultimo giorno)"
+      },
+      "cop_dhw_day": {
+        "name": "COP ACS (ultimo giorno)"
+      },
+      "energy_day": {
+        "name": "Giorno report energia"
+      },
+      "fault_code": {
+        "name": "Codice errore"
+      },
+      "controller_time": {
+        "name": "Orologio controller"
+      },
+      "controller_clock_offset": {
+        "name": "Scarto orologio controller"
+      },
+      "room_temp": {
+        "name": "Temperatura ambiente"
+      },
+      "target_temp": {
+        "name": "Temperatura impostata"
+      },
+      "mode": {
+        "name": "Modalità",
+        "state": {
+          "auto": "Auto",
+          "heat": "Caldo",
+          "dry": "Deumidifica",
+          "cool": "Freddo",
+          "fan_only": "Solo ventola"
+        }
+      },
+      "fan_speed": {
+        "name": "Velocità ventola",
+        "state": {
+          "auto": "Auto",
+          "speed_1": "1",
+          "speed_2": "2",
+          "speed_3": "3",
+          "speed_4": "4",
+          "full": "Massima"
+        }
+      },
+      "vane_vertical": {
+        "name": "Aletta verticale",
+        "state": {
+          "auto": "Auto",
+          "position_1": "1",
+          "position_2": "2",
+          "position_3": "3",
+          "position_4": "4",
+          "position_5": "5",
+          "swing": "Oscillazione"
+        }
+      },
+      "vane_horizontal": {
+        "name": "Aletta orizzontale",
+        "state": {
+          "auto": "Auto",
+          "far_left": "Tutto a sinistra",
+          "left": "Sinistra",
+          "center": "Centro",
+          "right": "Destra",
+          "far_right": "Tutto a destra",
+          "left_center": "Sinistra-centro",
+          "center_right": "Centro-destra",
+          "left_right": "Sinistra-destra",
+          "left_center_right": "Sinistra-centro-destra",
+          "swing": "Oscillazione"
+        }
+      },
+      "auto_mode": {
+        "name": "Stato modalità auto",
+        "state": {
+          "off": "Spento",
+          "switching": "In commutazione",
+          "auto_heating": "Riscaldamento",
+          "auto_cooling": "Raffrescamento"
+        }
+      },
+      "power_consumption": {
+        "name": "Consumo elettrico"
+      },
+      "dehumidification_setting": {
+        "name": "Impostazione deumidificazione"
+      },
+      "error_code": {
+        "name": "Codice errore"
+      },
+      "energy_consumed_total": {
+        "name": "Energia consumata"
+      },
+      "compressor_frequency": {
+        "name": "Frequenza compressore"
+      },
+      "runtime": {
+        "name": "Ore di funzionamento"
+      },
+      "rssi": {
+        "name": "Segnale Wi-Fi"
+      },
+      "adapter_firmware": {
+        "name": "Firmware adattatore"
+      }
+    },
+    "binary_sensor": {
+      "power": {
+        "name": "Accensione"
+      },
+      "compressor": {
+        "name": "Compressore"
+      },
+      "defrost": {
+        "name": "Sbrinamento"
+      },
+      "booster_heater_1": {
+        "name": "Resistenza booster 1"
+      },
+      "booster_heater_2": {
+        "name": "Resistenza booster 2"
+      },
+      "immersion_heater": {
+        "name": "Resistenza a immersione"
+      },
+      "water_pump_1": {
+        "name": "Pompa acqua 1"
+      },
+      "water_pump_2": {
+        "name": "Pompa acqua 2"
+      },
+      "water_pump_3": {
+        "name": "Pompa acqua 3"
+      },
+      "water_pump_4": {
+        "name": "Pompa acqua 4"
+      },
+      "three_way_valve": {
+        "name": "Valvola a 3 vie"
+      },
+      "three_way_valve_2": {
+        "name": "Valvola a 3 vie 2"
+      },
+      "in1_thermostat": {
+        "name": "Richiesta termostato IN1"
+      },
+      "in5_thermostat": {
+        "name": "Richiesta termostato IN5"
+      },
+      "in6_thermostat": {
+        "name": "Richiesta termostato IN6"
+      },
+      "dhw_forced": {
+        "name": "ACS forzata"
+      },
+      "holiday": {
+        "name": "Modalità vacanza"
+      },
+      "prohibit_dhw": {
+        "name": "ACS inibita"
+      },
+      "prohibit_heating_z1": {
+        "name": "Riscaldamento zona 1 inibito"
+      },
+      "prohibit_cooling_z1": {
+        "name": "Raffrescamento zona 1 inibito"
+      },
+      "server_control": {
+        "name": "Controllo da server"
+      },
+      "controller_clock_out_of_sync": {
+        "name": "Orologio controller fuori sincrono"
+      },
+      "operating": {
+        "name": "In funzione"
+      },
+      "power_saving": {
+        "name": "Risparmio energetico"
+      },
+      "i_see_sensor": {
+        "name": "Sensore i-See"
+      }
+    },
+    "climate": {
+      "air_conditioner": {
+        "state_attributes": {
+          "fan_mode": {
+            "state": {
+              "auto": "Auto",
+              "speed_1": "1",
+              "speed_2": "2",
+              "speed_3": "3",
+              "speed_4": "4",
+              "full": "Massima"
+            }
+          },
+          "swing_mode": {
+            "state": {
+              "auto": "Auto",
+              "position_1": "1",
+              "position_2": "2",
+              "position_3": "3",
+              "position_4": "4",
+              "position_5": "5",
+              "swing": "Oscillazione"
+            }
+          },
+          "swing_horizontal_mode": {
+            "state": {
+              "auto": "Auto",
+              "far_left": "Tutto a sinistra",
+              "left": "Sinistra",
+              "center": "Centro",
+              "right": "Destra",
+              "far_right": "Tutto a destra",
+              "left_center": "Sinistra-centro",
+              "center_right": "Centro-destra",
+              "left_right": "Sinistra-destra",
+              "left_center_right": "Sinistra-centro-destra",
+              "swing": "Oscillazione"
+            }
+          }
+        }
+      },
+      "zone_1": {
+        "name": "Zona 1"
+      }
+    },
+    "water_heater": {
+      "hot_water": {
+        "name": "Acqua calda sanitaria"
+      }
+    },
+    "switch": {
+      "dhw_forced": {
+        "name": "ACS forzata"
+      },
+      "system_power": {
+        "name": "Accensione impianto"
+      }
+    },
+    "select": {
+      "z1_control": {
+        "name": "Controllo zona 1",
+        "state": {
+          "room": "Temperatura ambiente",
+          "flow": "Temperatura di mandata",
+          "curve": "Curva climatica"
+        }
+      }
+    }
+  }
+}

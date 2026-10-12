@@ -1,0 +1,478 @@
+{
+  "config": {
+    "flow_title": "{name} ({host})",
+    "step": {
+      "user": {
+        "title": "MELocal",
+        "description": "Find Mitsubishi Electric MELCloud Wi-Fi adapters on your network and read them locally, without the cloud.",
+        "menu_options": {
+          "scan": "Scan the network",
+          "manual": "Enter an IP address"
+        }
+      },
+      "scan": {
+        "title": "Scan the network",
+        "description": "Networks to scan, comma separated (CIDR, e.g. 192.168.1.0/24). Adapters on another VLAN must be reachable from Home Assistant on TCP port 80.",
+        "data": {
+          "networks": "Networks"
+        }
+      },
+      "pick": {
+        "title": "Units found",
+        "description": "Found {count} new unit(s). Choose the one to add now; the others will appear as discovered.",
+        "data": {
+          "mac": "Unit"
+        }
+      },
+      "manual": {
+        "title": "Add by IP address",
+        "data": {
+          "host": "IP address"
+        }
+      },
+      "discovery_confirm": {
+        "description": "Add {name} at {host}?"
+      }
+    },
+    "error": {
+      "invalid_networks": "Invalid network list (at most 4096 addresses in total).",
+      "no_devices_found": "No adapter found.",
+      "no_new_devices": "All the adapters found are already configured.",
+      "cannot_connect": "No supported adapter answered at this address."
+    },
+    "abort": {
+      "already_configured": "This unit is already configured (its IP address has been updated)."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "data": {
+          "scan_interval": "Polling interval (seconds)"
+        }
+      }
+    }
+  },
+  "issues": {
+    "controller_clock": {
+      "title": "{name}: controller clock is off by {offset} minutes",
+      "description": "The clock of the Ecodan controller differs from Home Assistant's time by {offset} minutes. This usually happens when daylight saving time starts or ends and the controller's summer-time setting is manual.\n\nOn the unit's main remote controller go to **Menu → Initial settings** and switch summer time on or off (or correct the date and time). This warning disappears by itself once the clock is right."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "outside_temp": {
+        "name": "Outside temperature"
+      },
+      "z1_room_temp": {
+        "name": "Zone 1 room temperature"
+      },
+      "z2_room_temp": {
+        "name": "Zone 2 room temperature"
+      },
+      "flow_temp": {
+        "name": "Flow temperature"
+      },
+      "return_temp": {
+        "name": "Return temperature"
+      },
+      "dhw_tank_temp": {
+        "name": "Hot water tank temperature"
+      },
+      "dhw_secondary_temp": {
+        "name": "Hot water secondary temperature"
+      },
+      "z1_flow_temp": {
+        "name": "Zone 1 flow temperature"
+      },
+      "z1_return_temp": {
+        "name": "Zone 1 return temperature"
+      },
+      "z2_flow_temp": {
+        "name": "Zone 2 flow temperature"
+      },
+      "z2_return_temp": {
+        "name": "Zone 2 return temperature"
+      },
+      "boiler_flow_temp": {
+        "name": "Boiler flow temperature"
+      },
+      "boiler_return_temp": {
+        "name": "Boiler return temperature"
+      },
+      "mixing_tank_temp": {
+        "name": "Mixing tank temperature"
+      },
+      "refrigerant_liquid_temp": {
+        "name": "Refrigerant liquid temperature"
+      },
+      "condensing_temp": {
+        "name": "Condensing temperature"
+      },
+      "z1_room_temp_target": {
+        "name": "Zone 1 room target"
+      },
+      "z1_flow_temp_target": {
+        "name": "Zone 1 flow target"
+      },
+      "z2_room_temp_target": {
+        "name": "Zone 2 room target"
+      },
+      "z2_flow_temp_target": {
+        "name": "Zone 2 flow target"
+      },
+      "dhw_temp_target": {
+        "name": "Hot water target"
+      },
+      "legionella_temp": {
+        "name": "Legionella prevention temperature"
+      },
+      "max_flow_temp": {
+        "name": "Maximum flow temperature"
+      },
+      "min_flow_temp": {
+        "name": "Minimum flow temperature"
+      },
+      "dhw_temp_drop": {
+        "name": "Hot water temperature drop"
+      },
+      "operation": {
+        "name": "Operation",
+        "state": {
+          "off": "Off",
+          "dhw": "Hot water",
+          "heating": "Heating",
+          "cooling": "Cooling",
+          "frost_protection": "Frost protection",
+          "legionella": "Legionella prevention"
+        }
+      },
+      "z1_mode": {
+        "name": "Zone 1 mode",
+        "state": {
+          "heat_room": "Heat, room temperature",
+          "heat_flow": "Heat, flow temperature",
+          "heat_curve": "Heat, compensation curve",
+          "cool_room": "Cool, room temperature",
+          "cool_flow": "Cool, flow temperature"
+        }
+      },
+      "z2_mode": {
+        "name": "Zone 2 mode",
+        "state": {
+          "heat_room": "Heat, room temperature",
+          "heat_flow": "Heat, flow temperature",
+          "heat_curve": "Heat, compensation curve",
+          "cool_room": "Cool, room temperature",
+          "cool_flow": "Cool, flow temperature"
+        }
+      },
+      "dhw_mode": {
+        "name": "Hot water mode",
+        "state": {
+          "normal": "Normal",
+          "eco": "Eco"
+        }
+      },
+      "heat_source": {
+        "name": "Heat source",
+        "state": {
+          "heatpump": "Heat pump",
+          "screw_in_heater": "Immersion heater",
+          "electric_heater": "Electric heater",
+          "boiler": "Boiler"
+        }
+      },
+      "flow_rate": {
+        "name": "Flow rate"
+      },
+      "heat_output": {
+        "name": "Heat output (reported)"
+      },
+      "thermal_power": {
+        "name": "Thermal power (calculated)"
+      },
+      "power_consumption_estimated": {
+        "name": "Power consumption (estimated)"
+      },
+      "pump_speed": {
+        "name": "Pump speed"
+      },
+      "mixing_valve_step": {
+        "name": "Mixing valve step"
+      },
+      "consumed_heating_day": {
+        "name": "Heating energy consumed (last day)"
+      },
+      "consumed_cooling_day": {
+        "name": "Cooling energy consumed (last day)"
+      },
+      "consumed_dhw_day": {
+        "name": "Hot water energy consumed (last day)"
+      },
+      "delivered_heating_day": {
+        "name": "Heating energy delivered (last day)"
+      },
+      "delivered_cooling_day": {
+        "name": "Cooling energy delivered (last day)"
+      },
+      "delivered_dhw_day": {
+        "name": "Hot water energy delivered (last day)"
+      },
+      "cop_heating_day": {
+        "name": "Heating COP (last day)"
+      },
+      "cop_cooling_day": {
+        "name": "Cooling EER (last day)"
+      },
+      "cop_dhw_day": {
+        "name": "Hot water COP (last day)"
+      },
+      "energy_day": {
+        "name": "Energy report day"
+      },
+      "fault_code": {
+        "name": "Fault code"
+      },
+      "controller_time": {
+        "name": "Controller clock"
+      },
+      "controller_clock_offset": {
+        "name": "Controller clock offset"
+      },
+      "room_temp": {
+        "name": "Room temperature"
+      },
+      "target_temp": {
+        "name": "Target temperature"
+      },
+      "mode": {
+        "name": "Mode",
+        "state": {
+          "auto": "Auto",
+          "heat": "Heat",
+          "dry": "Dry",
+          "cool": "Cool",
+          "fan_only": "Fan only"
+        }
+      },
+      "fan_speed": {
+        "name": "Fan speed",
+        "state": {
+          "auto": "Auto",
+          "speed_1": "1",
+          "speed_2": "2",
+          "speed_3": "3",
+          "speed_4": "4",
+          "full": "Full"
+        }
+      },
+      "vane_vertical": {
+        "name": "Vertical vane",
+        "state": {
+          "auto": "Auto",
+          "position_1": "1",
+          "position_2": "2",
+          "position_3": "3",
+          "position_4": "4",
+          "position_5": "5",
+          "swing": "Swing"
+        }
+      },
+      "vane_horizontal": {
+        "name": "Horizontal vane",
+        "state": {
+          "auto": "Auto",
+          "far_left": "Far left",
+          "left": "Left",
+          "center": "Center",
+          "right": "Right",
+          "far_right": "Far right",
+          "left_center": "Left-center",
+          "center_right": "Center-right",
+          "left_right": "Left-right",
+          "left_center_right": "Left-center-right",
+          "swing": "Swing"
+        }
+      },
+      "auto_mode": {
+        "name": "Auto mode state",
+        "state": {
+          "off": "Off",
+          "switching": "Switching",
+          "auto_heating": "Heating",
+          "auto_cooling": "Cooling"
+        }
+      },
+      "power_consumption": {
+        "name": "Power consumption"
+      },
+      "dehumidification_setting": {
+        "name": "Dehumidification setting"
+      },
+      "error_code": {
+        "name": "Error code"
+      },
+      "energy_consumed_total": {
+        "name": "Energy consumed"
+      },
+      "compressor_frequency": {
+        "name": "Compressor frequency"
+      },
+      "runtime": {
+        "name": "Operating hours"
+      },
+      "rssi": {
+        "name": "Wi-Fi signal"
+      },
+      "adapter_firmware": {
+        "name": "Adapter firmware"
+      }
+    },
+    "binary_sensor": {
+      "power": {
+        "name": "Power"
+      },
+      "compressor": {
+        "name": "Compressor"
+      },
+      "defrost": {
+        "name": "Defrost"
+      },
+      "booster_heater_1": {
+        "name": "Booster heater 1"
+      },
+      "booster_heater_2": {
+        "name": "Booster heater 2"
+      },
+      "immersion_heater": {
+        "name": "Immersion heater"
+      },
+      "water_pump_1": {
+        "name": "Water pump 1"
+      },
+      "water_pump_2": {
+        "name": "Water pump 2"
+      },
+      "water_pump_3": {
+        "name": "Water pump 3"
+      },
+      "water_pump_4": {
+        "name": "Water pump 4"
+      },
+      "three_way_valve": {
+        "name": "3-way valve"
+      },
+      "three_way_valve_2": {
+        "name": "3-way valve 2"
+      },
+      "in1_thermostat": {
+        "name": "IN1 thermostat request"
+      },
+      "in5_thermostat": {
+        "name": "IN5 thermostat request"
+      },
+      "in6_thermostat": {
+        "name": "IN6 thermostat request"
+      },
+      "dhw_forced": {
+        "name": "Forced hot water"
+      },
+      "holiday": {
+        "name": "Holiday mode"
+      },
+      "prohibit_dhw": {
+        "name": "Hot water prohibited"
+      },
+      "prohibit_heating_z1": {
+        "name": "Zone 1 heating prohibited"
+      },
+      "prohibit_cooling_z1": {
+        "name": "Zone 1 cooling prohibited"
+      },
+      "server_control": {
+        "name": "Server control"
+      },
+      "controller_clock_out_of_sync": {
+        "name": "Controller clock out of sync"
+      },
+      "operating": {
+        "name": "Operating"
+      },
+      "power_saving": {
+        "name": "Power saving"
+      },
+      "i_see_sensor": {
+        "name": "i-See sensor"
+      }
+    },
+    "climate": {
+      "air_conditioner": {
+        "state_attributes": {
+          "fan_mode": {
+            "state": {
+              "auto": "Auto",
+              "speed_1": "1",
+              "speed_2": "2",
+              "speed_3": "3",
+              "speed_4": "4",
+              "full": "Full"
+            }
+          },
+          "swing_mode": {
+            "state": {
+              "auto": "Auto",
+              "position_1": "1",
+              "position_2": "2",
+              "position_3": "3",
+              "position_4": "4",
+              "position_5": "5",
+              "swing": "Swing"
+            }
+          },
+          "swing_horizontal_mode": {
+            "state": {
+              "auto": "Auto",
+              "far_left": "Far left",
+              "left": "Left",
+              "center": "Center",
+              "right": "Right",
+              "far_right": "Far right",
+              "left_center": "Left-center",
+              "center_right": "Center-right",
+              "left_right": "Left-right",
+              "left_center_right": "Left-center-right",
+              "swing": "Swing"
+            }
+          }
+        }
+      },
+      "zone_1": {
+        "name": "Zone 1"
+      }
+    },
+    "water_heater": {
+      "hot_water": {
+        "name": "Hot water"
+      }
+    },
+    "switch": {
+      "dhw_forced": {
+        "name": "Forced hot water"
+      },
+      "system_power": {
+        "name": "System power"
+      }
+    },
+    "select": {
+      "z1_control": {
+        "name": "Zone 1 control",
+        "state": {
+          "room": "Room temperature",
+          "flow": "Flow temperature",
+          "curve": "Compensation curve"
+        }
+      }
+    }
+  }
+}
