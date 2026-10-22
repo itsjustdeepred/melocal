@@ -29,6 +29,10 @@ COMMAND_REFRESH_DELAY = 5
 CLOCK_TOLERANCE_MIN = 10
 # Fresh readings in a row before raising a repair issue.
 CLOCK_ISSUE_AFTER = 3
+# Failed polls in a row before the entities go unavailable. The adapter drops
+# off the network for 15-30 s every half hour or so (it restarts its Wi-Fi when
+# it cannot reach MELCloud), which would otherwise blank everything each time.
+MAX_MISSED_POLLS = 3
 
 
 class MelocalCoordinator(DataUpdateCoordinator[dict[str, Any]]):
@@ -52,12 +56,26 @@ class MelocalCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         self._estimator = EnergyRateEstimator()
         self._clock_offset: int | None = None
         self._clock_bad_readings = 0
+        self._missed_polls = 0
 
     async def _async_update_data(self) -> dict[str, Any]:
         try:
             state = await self.client.async_get_state()
         except MelocalError as err:
+            self._missed_polls += 1
+            if self.data is not None and self._missed_polls < MAX_MISSED_POLLS:
+                _LOGGER.debug(
+                    "%s: poll failed (%d/%d), keeping last data: %s",
+                    self.client.host,
+                    self._missed_polls,
+                    MAX_MISSED_POLLS,
+                    err,
+                )
+                return self.data
             raise UpdateFailed(str(err)) from err
+        if self._missed_polls:
+            _LOGGER.debug("%s: back after %d missed polls", self.client.host, self._missed_polls)
+            self._missed_polls = 0
         return self._process(state)
 
     async def async_send_command(self, *packets: bytes, optimistic: dict[str, Any] | None = None) -> None:
