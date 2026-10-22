@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime, timedelta
+import asyncio
 import logging
 import time
 from typing import Any
@@ -17,7 +18,7 @@ from homeassistant.helpers.event import async_call_later
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 from homeassistant.util import dt as dt_util
 
-from .api import KIND_ATW, AdapterState, MelocalClient, MelocalError
+from .api import KIND_ATW, AdapterState, MelocalClient, MelocalError, MelocalUnsupported
 from .const import CONF_KIND, CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL, DOMAIN
 from .decode import decode_ata, decode_atw
 from .estimator import EnergyRateEstimator
@@ -33,6 +34,10 @@ CLOCK_ISSUE_AFTER = 3
 # off the network for 15-30 s every half hour or so (it restarts its Wi-Fi when
 # it cannot reach MELCloud), which would otherwise blank everything each time.
 MAX_MISSED_POLLS = 3
+# Seconds to wait before each new attempt when a command cannot reach the
+# adapter. Together they span one of its Wi-Fi restarts. SET packets carry the
+# full target state, so sending one twice is harmless.
+COMMAND_RETRY_DELAYS = (5, 10, 20)
 
 
 class MelocalCoordinator(DataUpdateCoordinator[dict[str, Any]]):
@@ -81,10 +86,21 @@ class MelocalCoordinator(DataUpdateCoordinator[dict[str, Any]]):
     async def async_send_command(self, *packets: bytes, optimistic: dict[str, Any] | None = None) -> None:
         """Send SET packets, show the expected state at once, re-read shortly after."""
         _LOGGER.debug("%s: sending %s", self.client.host, [p.hex() for p in packets])
-        try:
-            state = await self.client.async_send(*packets)
-        except MelocalError as err:
-            raise HomeAssistantError(f"Command failed: {err}") from err
+        for attempt, delay in enumerate((*COMMAND_RETRY_DELAYS, None), start=1):
+            try:
+                state = await self.client.async_send(*packets)
+                break
+            except MelocalUnsupported as err:
+                raise HomeAssistantError(f"Command failed: {err}") from err
+            except MelocalError as err:
+                if delay is None:
+                    raise HomeAssistantError(f"Command failed after {attempt} attempts: {err}") from err
+                _LOGGER.warning(
+                    "%s: command attempt %d failed (%s), retrying in %ds", self.client.host, attempt, err, delay
+                )
+                await asyncio.sleep(delay)
+        if attempt > 1:
+            _LOGGER.info("%s: command sent at attempt %d", self.client.host, attempt)
         self._apply(state, optimistic)
 
     def _apply(self, state: AdapterState, optimistic: dict[str, Any] | None) -> None:
