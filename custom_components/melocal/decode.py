@@ -15,7 +15,9 @@ ATW_ZONE_MODE = {0: "heat_room", 1: "heat_flow", 2: "heat_curve", 3: "cool_room"
 ATW_DHW_MODE = {0: "normal", 1: "eco"}
 ATW_HEAT_SOURCE = {0: "heatpump", 1: "screw_in_heater", 2: "electric_heater", 3: "boiler"}
 
-ATA_MODE = {0: "auto", 1: "heat", 2: "dry", 3: "cool", 7: "fan_only"}
+# CN105 mode byte (SwiCago HeatPump): AUTO is 0x08, not 0 as in pymitsubishi; the unit
+# ignores 0 and keeps its previous mode. Above 0x08 the i-See flag is added.
+ATA_MODE = {1: "heat", 2: "dry", 3: "cool", 7: "fan_only", 8: "auto"}
 ATA_FAN = {0: "auto", 1: "speed_1", 2: "speed_2", 3: "speed_3", 5: "speed_4", 6: "full"}
 ATA_VANE = {0: "auto", 1: "position_1", 2: "position_2", 3: "position_3", 4: "position_4",
             5: "position_5", 7: "swing"}
@@ -157,8 +159,9 @@ def decode_ata(frames: dict[int, bytes]) -> dict[str, Any]:
 
     if d := frames.get(0x02):
         s["power"] = d[8] == 1
-        s["mode"] = ATA_MODE.get(d[9] & 0x07)
-        s["i_see_sensor"] = bool(d[9] & 0x08)
+        i_see = d[9] > 0x08
+        s["mode"] = ATA_MODE.get(d[9] - 0x08 if i_see else d[9])
+        s["i_see_sensor"] = i_see
         s["target_temp"] = half(d[16]) if d[16] else 31 - d[10]
         s["fan_speed"] = ATA_FAN.get(d[11])
         s["vane_vertical"] = ATA_VANE.get(d[12])

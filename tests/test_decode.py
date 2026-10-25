@@ -141,3 +141,18 @@ def test_power_estimator_smooths_irregular_steps():
         readings.append(est.update(v, t))
     settled = [p for p in readings[4:] if p is not None]
     assert settled and all(3500 <= p <= 4500 for p in settled), settled
+
+
+def test_ata_auto_mode_byte():
+    # CN105 AUTO is 0x08; 0 is ignored by the unit, which keeps its previous mode.
+    settings = commands.AtaSettings(
+        power=True, mode="auto", target_temp=23.0, fan_speed="auto",
+        vane_vertical="auto", vane_horizontal="auto",
+    )
+    assert commands.ata_general(settings, commands.ATA_MODE_FLAG)[9] == 0x08
+    frame = bytearray(22)
+    frame[16] = 0x80 + 46
+    for raw, mode, i_see in ((0x08, "auto", False), (0x03, "cool", False), (0x09, "heat", True)):
+        frame[9] = raw
+        d = decode.decode_ata({0x02: bytes(frame)})
+        assert (d["mode"], d["i_see_sensor"]) == (mode, i_see)
