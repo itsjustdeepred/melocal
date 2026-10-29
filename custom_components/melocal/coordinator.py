@@ -38,6 +38,12 @@ MAX_MISSED_POLLS = 3
 # adapter. Together they span one of its Wi-Fi restarts. SET packets carry the
 # full target state, so sending one twice is harmless.
 COMMAND_RETRY_DELAYS = (5, 10, 20)
+# Polls showing the old state before a command counts as lost. Right after a
+# Wi-Fi restart the adapter can answer a SET with 200 while the unit never
+# applies it, so the reading has to be checked, not the HTTP reply.
+COMMAND_VERIFY_POLLS = 2
+# Times a lost command is sent again before giving up.
+COMMAND_RESENDS = 2
 
 
 class MelocalCoordinator(DataUpdateCoordinator[dict[str, Any]]):
@@ -62,6 +68,8 @@ class MelocalCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         self._clock_offset: int | None = None
         self._clock_bad_readings = 0
         self._missed_polls = 0
+        # (packets, expected values, polls left, resends left) of the last command.
+        self._pending: tuple[tuple[bytes, ...], dict[str, Any], int, int] | None = None
 
     async def _async_update_data(self) -> dict[str, Any]:
         try:
@@ -81,7 +89,37 @@ class MelocalCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         if self._missed_polls:
             _LOGGER.debug("%s: back after %d missed polls", self.client.host, self._missed_polls)
             self._missed_polls = 0
-        return self._process(state)
+        data = self._process(state)
+        await self._verify_command(data)
+        return data
+
+    async def _verify_command(self, data: dict[str, Any]) -> None:
+        """Send the last command again if the unit still shows the old state."""
+        if self._pending is None:
+            return
+        packets, expected, polls, resends = self._pending
+        wrong = {k: v for k, v in expected.items() if k in data and data[k] != v}
+        if not wrong:
+            self._pending = None
+            return
+        if polls > 1:
+            self._pending = (packets, expected, polls - 1, resends)
+            return
+        if not resends:
+            _LOGGER.warning("%s: command not applied by the unit, giving up: %s", self.client.host, wrong)
+            self._pending = None
+            return
+        _LOGGER.warning(
+            "%s: command not applied by the unit (%s), sending it again", self.client.host, wrong
+        )
+        self._pending = (packets, expected, COMMAND_VERIFY_POLLS, resends - 1)
+        try:
+            await self.client.async_send(*packets)
+        except MelocalError as err:
+            _LOGGER.debug("%s: resend failed, will check again: %s", self.client.host, err)
+            return
+        data.update(expected)
+        async_call_later(self.hass, COMMAND_REFRESH_DELAY, self._delayed_refresh)
 
     async def async_send_command(self, *packets: bytes, optimistic: dict[str, Any] | None = None) -> None:
         """Send SET packets, show the expected state at once, re-read shortly after."""
@@ -101,6 +139,7 @@ class MelocalCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 await asyncio.sleep(delay)
         if attempt > 1:
             _LOGGER.info("%s: command sent at attempt %d", self.client.host, attempt)
+        self._pending = (packets, optimistic, COMMAND_VERIFY_POLLS, COMMAND_RESENDS) if optimistic else None
         self._apply(state, optimistic)
 
     def _apply(self, state: AdapterState, optimistic: dict[str, Any] | None) -> None:
